@@ -10,6 +10,7 @@ public class Game
 	
 	public Game()
 	{
+		dispatcher = new Dispatcher();
 		scan = new Scanner(System.in);
 		x = GRID_SIZE / 2;
 		y = GRID_SIZE / 2;
@@ -18,14 +19,14 @@ public class Game
 				room.load();
 	}
 	
-	public static void print(String str)
+	public static void print(Object o)
 	{
-		System.out.print(str);
+		System.out.print(o.toString());
 	}
 	
-	public static void println(String str)
+	public static void println(Object o)
 	{
-		System.out.println(str);
+		System.out.println(o.toString());
 	}
 	
 	public static void println()
@@ -39,10 +40,13 @@ public class Game
 		return scan.nextLine();
 	}
 	
+	public Room getRoom()
+	{
+		return grid[y][x];
+	}
+	
 	private void mainLoop()
 	{
-		Room currRoom = grid[y][x];
-		println(currRoom.getDescription());
 		String input = getInput();
 	}
 	

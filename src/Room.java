@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Room implements GameObject
+public class Room extends GameObject
 {
 	private ArrayList<GameObject> objects;
 	
