@@ -4,6 +4,11 @@ public class Room implements GameObject
 {
 	private ArrayList<GameObject> objects;
 	
+	public Room()
+	{
+		objects = new ArrayList<GameObject>();
+	}
+	
 	public void load()
 	{
 		
@@ -11,6 +16,9 @@ public class Room implements GameObject
 	
 	public String getDescription()
 	{
-		return "A room.";
+		String descr = "A room.\n";
+		for (GameObject obj : objects)
+			descr += obj.getDescription();
+		return descr;
 	}
 }
