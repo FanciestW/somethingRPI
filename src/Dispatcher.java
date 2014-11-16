@@ -64,7 +64,7 @@ public class Dispatcher
 			public boolean handle(Map<String, String> argMap)
 			{
 				if(!room.getEast()){
-					Game.getInstance().move(1, 0);
+					Game.move(1, 0);
 				}else{
 					Game.println("There is a wall in the way");
 				}
@@ -81,7 +81,7 @@ public class Dispatcher
 			public boolean handle(Map<String, String> argMap)
 			{
 				if(!room.getWest()){
-					Game.getInstance().move(-1, 0);
+					Game.move(-1, 0);
 				}else{
 					Game.println("There is a wall in the way");
 				}
@@ -97,7 +97,7 @@ public class Dispatcher
 			public boolean handle(Map<String, String> argMap)
 			{
 				if(!room.getNorth()){
-					Game.getInstance().move(0, -1);
+					Game.move(0, -1);
 				}else{
 					Game.println("There is a wall in the way");
 				}
@@ -113,7 +113,7 @@ public class Dispatcher
 			public boolean handle(Map<String, String> argMap)
 			{
 				if(!room.getSouth()){
-					Game.getInstance().move(0, 1);
+					Game.move(0, 1);
 				}else{
 					Game.println("There is a wall in the way");
 				}
@@ -164,19 +164,107 @@ public class Dispatcher
 			}
 		});
 		
-		/*
-		options.put(new Option("pick up", "pick"), new Handler() {
+		
+		options.put(new Option("pick", "p"), new Handler() {
 			public Token[] getSyntax()
 			{
-				return new Token[] { new Token("at", true), new Token("object", false) };
+				return new Token[] { new Token("up", true), new Token("object", false) };
 			}
 			public boolean handle(Map<String, String> argMap)
 			{
-				//Game.println(room.getDescription());
+				String objName = argMap.get("object");
+				if (room.contains(objName) && !objName.equals("monster") && !objName.equals("quicksand"))
+				{
+					GameObject obj = room.get(objName);
+					room.delete(objName);
+					Game.getInventory().addToInventory(obj);	
+				}else{
+					Game.println("I don't understand what you want to pick up.");
+				}
 				return true;
 			}
 		});
-		*/
+		
+		options.put(new Option("drop", "d"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { new Token("object", false) };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				String objName = argMap.get("object");
+				if (Game.getInventory().contains(objName))
+				{
+					GameObject obj = Game.getInventory().get(objName);
+					Game.addObject(Game.getX(), Game.getY(), obj);
+					Game.getInventory().dropInventory(obj);	
+				}else{
+					Game.println("I don't understand what you want to drop.");
+				}
+				return true;
+			}
+		});
+		
+		
+		options.put(new Option("inventory", "inv"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				Game.getInventory().viewInventory();
+				return true;
+			}
+		});
+		
+		options.put(new Option("fight", "destroy"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				if(room.contains("monster")){
+					GameObject obj = room.get("monster").killCondition();
+					if(Game.getInventory().contains(obj)){
+						Game.println("You successfully killed the monster! You can proceed");
+						room.delete("monster");
+					}else{
+						Game.println("You died, try again");
+						return false;
+					}
+				}else{
+					Game.println("There is nothing to fight!");
+				}
+				return true;
+			}
+		});
+		
+		options.put(new Option("open", "unlock"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { new Token("object", false)};
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				String objName = argMap.get("object");
+				if (room.contains(objName))
+				{
+					GameObject obj = room.get(objName);
+					if(obj.getName().equals("chest") && Game.getInventory().contains(obj.killCondition())){
+						room.delete(objName);
+						Game.println("Found a " + obj.getObject().getName() + "!");
+						Game.getInventory().addToInventory(obj.getObject());
+					}else{
+						Game.println("Cannot open that");
+					}
+				}else{
+					Game.println("I don't understand what you want to open");
+				}
+				return true;
+			}
+		});
 	}
 	
 	public boolean dispatch(String command, String[] args, Room room)
@@ -212,8 +300,7 @@ public class Dispatcher
 				for (int i = 0; i < tokens.length; ++i)
 				{
 					Token token = tokens[i];
-					if (token.isLiteral())
-						if (!token.getName().equals(args[i]))
+					if (token.isLiteral() && !token.getName().equals(args[i]))
 						{
 							err = "The syntax of \"" + command + "\" requires the use of \""
 								+ token.getName() + "\", not \"" + args[i] + "\".";
@@ -239,4 +326,5 @@ public class Dispatcher
 			Game.println("Command not recognized.");
 		return true;
 	}
+
 }

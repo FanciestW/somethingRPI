@@ -14,6 +14,18 @@ public class Room implements GameObject
 		west = false;
 	}
 	
+	public GameObject killCondition(){
+		return null;
+	}
+	
+	public GameObject getObject(){
+		return null;
+	}
+	
+	public void addObject(GameObject s){
+		objects.add(s);
+	}
+	
 	public void setSouth(){
 		south = true;
 	}
@@ -54,22 +66,33 @@ public class Room implements GameObject
 	public String getDescription()
 	{
 		String descr = "A room.\n";
-		for (GameObject obj : objects)
+		for (GameObject obj : objects){
 			descr += obj.getDescription();
+			descr += "\n";
+			if(obj.getName().equals("thief")){
+				Game.println("Oh no a thief! He steals all your items");
+				Game.getInventory().deleteAll();
+			}
+		}
 		return descr;
 	}
 	
 	private GameObject find(String name)
 	{
-		for (GameObject obj : objects)
+		for (GameObject obj : objects){
 			if (obj.getName().equals(name))
 				return obj;
+		}
 		return null;
+	}
+	
+	public void delete(String s){
+		objects.remove(find(s));
 	}
 	
 	public boolean contains(String obj)
 	{
-		return find(obj) != null;
+		return (find(obj) != null);
 	}
 	
 	public GameObject get(String name)
