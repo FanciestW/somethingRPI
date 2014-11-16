@@ -4,23 +4,23 @@ public class Game
 {
 	private Room[][] grid;
 	private int x, y;
-	private static final int GRID_SIZE = 10;
 	private Scanner scan;
-	private Dispatcher dispatcher;\
-	
+	private Dispatcher dispatcher;
+	private FreebaseManager freebase;
+	private double latitude, longitude;
+	public static double GEO_SQUARE_SIZE = 0.2;
+
 	private static Game game = new Game();
 	
 	private Game()
 	{
+		freebase = new FreebaseManager();
 		dispatcher = new Dispatcher();
 		scan = new Scanner(System.in);
 		// begin at center of grid
-		x = GRID_SIZE / 2;
-		y = GRID_SIZE / 2;
-		grid = new Room[GRID_SIZE][GRID_SIZE]; // square grid
-		for (int x = 0; x < GRID_SIZE; ++x)
-			for (int y = 0; y < GRID_SIZE; ++y)
-				grid[y][x] = new Room();
+		latitude = 42.0;
+		longitude = -72.7;
+		refreshGrid();
 	}
 	
 	public static Game getInstance()
@@ -56,15 +56,27 @@ public class Game
 	
 	private void refreshGrid()
 	{
-		//Free
+		grid = freebase.getGrid(latitude, longitude);
 	}
 	
 	public void move(int dx, int dy)
 	{
 		x += dx;
 		y += dy;
-		if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE)
-			refreshGrid();
+		if (x >= 0 && x < grid.length && y >= 0 && y < grid.length)
+		{
+			println(getRoom().getDescription());
+			return;
+		}
+		else if (x < 0)
+			longitude -= GEO_SQUARE_SIZE;
+		else if (x >= grid.length)
+			longitude += GEO_SQUARE_SIZE;
+		else if (y < 0)
+			latitude -= GEO_SQUARE_SIZE;
+		else
+			latitude += GEO_SQUARE_SIZE;
+		refreshGrid();
 		println(getRoom().getDescription());
 	}
 	
