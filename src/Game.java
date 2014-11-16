@@ -49,7 +49,7 @@ public class Game
 	
 	private void mainLoop()
 	{
-		println(getRoom()); // start out by printing intial description
+		println(getRoom().getDescription()); // start out by printing intial description
 		while (true)
 		{
 			String input = getInput();

@@ -14,22 +14,59 @@ public class Dispatcher
 		
 		options = new LinkedHashMap<Option, Handler>();
 		
-		/*options.put(new Option("look", "l"), new Handler() {
+		options.put(new Option("help", "h"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				Game.println("Possible commands:");
+				for (Map.Entry<Option, Handler> pair : options.entrySet())
+				{
+					Option opt = pair.getKey();
+					Handler handler = pair.getValue();
+					Game.print("\n  (\"" + opt.getName() + "\" or \"" + opt.getAbbrev() +
+							"\") ");
+					for (Token token : handler.getSyntax())
+					{
+						if (token.isLiteral())
+							Game.print(token.getName() + " ");
+						else
+							Game.print("[" + token.getName() + "] ");
+					}
+					for (String optionalArg : handler.getExtraOpts())
+						Game.print("[" + optionalArg + "]? ");
+				}
+				
+				Game.println();
+				return true;
+			}
+		});
+		
+		options.put(new Option("look", "l"), new Handler() {
 			public Token[] getSyntax()
 			{
 				return new Token[] { new Token("at", true), new Token("object", false) };
 			}
-			public String[] 
-		}*/
+			public boolean handle(Map<String, String> argMap)
+			{
+				String objName = argMap.get("object");
+				if (room.contains(objName))
+				{
+					GameObject obj = room.get(objName);
+					Game.println(obj.getDescription());
+				}
+				else
+					Game.println("I don't understand what you want to look at.");
+				return true;
+			}
+		});
 		
 		options.put(new Option("look", "l"), new Handler() {
 			public Token[] getSyntax()
 			{
 				return new Token[] { };
-			}
-			public String[] getExtraOpts()
-			{
-				return new String[] { };
 			}
 			public boolean handle(Map<String, String> argMap)
 			{
@@ -60,13 +97,13 @@ public class Dispatcher
 				if (args.length < tokens.length)
 				{
 					err = "Please specify more arguments for the command \""
-							+ command + "\".";
+						+ command + "\".";
 					continue;
 				}
 				else if (args.length > tokens.length + extraOpts.length)
 				{
 					err = "Too many arguments for the command \""
-							+ command + "\".";
+						+ command + "\".";
 					continue;
 				}
 				for (int i = 0; i < tokens.length; ++i)
@@ -76,7 +113,7 @@ public class Dispatcher
 						if (!token.getName().equals(args[i]))
 						{
 							err = "The syntax of \"" + command + "\" requires the use of \""
-									+ token.getName() + "\", not \"" + args[i] + "\".";
+								+ token.getName() + "\", not \"" + args[i] + "\".";
 							continue MainLoop;
 						}
 					else

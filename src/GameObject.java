@@ -1,9 +1,5 @@
-public abstract class GameObject
+public interface GameObject
 {
-	public abstract String getDescription();
-	
-	public String toString()
-	{
-		return getDescription();
-	}
+	public String getDescription();
+	public String getName();
 }
