@@ -9,11 +9,6 @@ public class Room extends GameObject
 		objects = new ArrayList<GameObject>();
 	}
 	
-	public void load()
-	{
-		
-	}
-	
 	public String getDescription()
 	{
 		String descr = "A room.\n";

@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Dispatcher
@@ -8,25 +9,94 @@ public class Dispatcher
 	
 	public Dispatcher()
 	{
-		options = new HashMap<Option, Handler>();
-		register(new Option("look", "l"), new Handler() {
-			public String[] getParams()
+		// make sure to put "X Y ..." before "X ...", etc.
+		// TODO: maybe ensure this programatically?
+		
+		options = new LinkedHashMap<Option, Handler>();
+		
+		/*options.put(new Option("look", "l"), new Handler() {
+			public Token[] getSyntax()
 			{
-				return null;
+				return new Token[] { new Token("at", true), new Token("object", false) };
 			}
-			public void handle(Map<String, String> argMap)
+			public String[] 
+		}*/
+		
+		options.put(new Option("look", "l"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public String[] getExtraOpts()
+			{
+				return new String[] { };
+			}
+			public boolean handle(Map<String, String> argMap)
 			{
 				Game.println(room);
+				return true;
 			}
 		});
 	}
 	
-	private void register(Option option, Handler handler)
+	public boolean dispatch(String command, String[] args, Room room)
 	{
-		for (Option opt : options.keySet())
-			if (opt.equals(option))
-				throw new RuntimeException("Cannot register two matching options: " + opt.toString()
-						+ " and " + option.toString());
-		options.put(option, handler);
+		// Return false to exit
+		
+		this.room = room;
+		String err = null;
+		
+		MainLoop:
+		for (Map.Entry<Option, Handler> pair : options.entrySet())
+		{
+			Option opt = pair.getKey();
+			Handler handler = pair.getValue();
+
+			if (opt.equals(command))
+			{
+				Map<String, String> argMap = new HashMap<String, String>();
+				Token[] tokens = handler.getSyntax();
+				String[] extraOpts = handler.getExtraOpts();
+				if (args.length < tokens.length)
+				{
+					err = "Please specify more arguments for the command \""
+							+ command + "\".";
+					continue;
+				}
+				else if (args.length > tokens.length + extraOpts.length)
+				{
+					err = "Too many arguments for the command \""
+							+ command + "\".";
+					continue;
+				}
+				for (int i = 0; i < tokens.length; ++i)
+				{
+					Token token = tokens[i];
+					if (token.isLiteral())
+						if (!token.getName().equals(args[i]))
+						{
+							err = "The syntax of \"" + command + "\" requires the use of \""
+									+ token.getName() + "\", not \"" + args[i] + "\".";
+							continue MainLoop;
+						}
+					else
+						argMap.put(token.getName(), args[i]);
+				}
+				for (int i = 0; i < extraOpts.length; ++i)
+				{
+					int argsIndex = i + tokens.length;
+					if (argsIndex >= args.length)
+						break;
+					argMap.put(extraOpts[i], args[argsIndex]);
+				}
+				return handler.handle(argMap);
+			}
+		}
+		
+		if (err != null)
+			Game.println(err);
+		else
+			Game.println("Command not recognized.");
+		return true;
 	}
 }

@@ -4,8 +4,8 @@ public class Option
 	
 	public Option(String name, String abbrev)
 	{
-		this.name = name;
-		this.abbrev = abbrev;
+		this.name = name.toLowerCase();
+		this.abbrev = abbrev.toLowerCase();
 	}
 	
 	public String getName()
@@ -18,14 +18,13 @@ public class Option
 		return abbrev;
 	}
 	
-	public boolean equals(Option other)
-	{
-		return (name.equals(other.name) || abbrev.equals(other.abbrev)
-				|| name.equals(other.abbrev) || abbrev.equals(other.name));
-	}
-	
 	public String toString()
 	{
 		return "{ " + name + " [" + abbrev + "]}";
+	}
+	
+	public boolean equals(String str)
+	{
+		return (name.equals(str) || abbrev.equals(str));
 	}
 }

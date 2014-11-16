@@ -12,11 +12,13 @@ public class Game
 	{
 		dispatcher = new Dispatcher();
 		scan = new Scanner(System.in);
+		// begin at center of grid
 		x = GRID_SIZE / 2;
 		y = GRID_SIZE / 2;
-		for (Room[] row : grid)
-			for (Room room : row)
-				room.load();
+		grid = new Room[GRID_SIZE][GRID_SIZE]; // square grid
+		for (int x = 0; x < GRID_SIZE; ++x)
+			for (int y = 0; y < GRID_SIZE; ++y)
+				grid[y][x] = new Room();
 	}
 	
 	public static void print(Object o)
@@ -37,7 +39,7 @@ public class Game
 	private String getInput()
 	{
 		print("> ");
-		return scan.nextLine();
+		return scan.nextLine().toLowerCase();
 	}
 	
 	public Room getRoom()
@@ -47,7 +49,17 @@ public class Game
 	
 	private void mainLoop()
 	{
-		String input = getInput();
+		println(getRoom()); // start out by printing intial description
+		while (true)
+		{
+			String input = getInput();
+			String[] strSplit = input.split(" ");
+			String[] args = new String[strSplit.length - 1];
+			for (int i = 1; i < strSplit.length; ++i)
+				args[i - 1] = strSplit[i];
+			if (!dispatcher.dispatch(strSplit[0], args, getRoom()))
+				break;
+		}
 	}
 	
 	public static void main(String[] args)
