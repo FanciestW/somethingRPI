@@ -92,7 +92,7 @@ public class Dispatcher
 			}
 		});
 		
-		options.put(new Option("exit", "quit"), new Handler() {
+		options.put(new Option("end", "quit"), new Handler() {
 			public Token[] getSyntax()
 			{
 				return new Token[] { };
@@ -146,7 +146,7 @@ public class Dispatcher
 			}
 			public boolean handle(Map<String, String> argMap)
 			{
-				if (argMap.containsKey("town") && !argMap.get("town").equals(
+				if (argMap.containsKey("town") && !argMap.get("town").equalsIgnoreCase(
 						Game.getInstance().getRoom().getName()))
 					Game.println("You can't go there right now.");
 				else if (Game.getInstance().inTown())
@@ -168,7 +168,7 @@ public class Dispatcher
 			}
 			public boolean handle(Map<String, String> argMap)
 			{
-				if (argMap.containsKey("town") && !argMap.get("town").equals(
+				if (argMap.containsKey("town") && !argMap.get("town").equalsIgnoreCase(
 						Game.getInstance().getRoom().getName()))
 					Game.println("You aren't in that town.");
 				else if (!Game.getInstance().inTown())

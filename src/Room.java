@@ -4,15 +4,25 @@ public class Room implements GameObject
 {
 	protected ArrayList<GameObject> objects;
 	protected String name = "a room";
+	protected String description = "A nondescript room.";
 	
 	public Room()
 	{
 		objects = new ArrayList<GameObject>();
+		String lower = description.toLowerCase();
+		if (lower.contains("book") || lower.contains("education"))
+			addObject(new Book());
+		if (lower.contains("food"))
+			addObject(new Food());
+		if (lower.contains("sport"))
+			addObject(new SportsItem());
 	}
 	
-	public Room(String name)
+	public Room(String name, String description)
 	{
 		this.name = name;
+		this.description = description;
+		objects = new ArrayList<GameObject>();
 	}
 	
 	public void addObject(GameObject obj)
@@ -27,9 +37,16 @@ public class Room implements GameObject
 	
 	public String getDescription()
 	{
+		if (description.length() == 0)
+			return "Not much to see here.";
+		return description;
+	}
+	
+	private String display()
+	{
 		if (objects.size() == 0)
-			return "a room.";
-		String descr = "a room. You can see ";
+			return name + ".";
+		String descr = name + ". You can see ";
 		if (objects.size() == 1)
 			descr += objects.get(0).getName() + ".";
 		else if (objects.size() == 2)
@@ -61,6 +78,6 @@ public class Room implements GameObject
 	
 	public String toString()
 	{
-		return "You are in " + getName() + ".";
+		return "You are in " + display();
 	}
 }

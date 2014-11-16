@@ -4,13 +4,13 @@ public class Game
 {
 	private Room[][] grid, tempGrid;
 	// TODO: load new room areas in a separate thread
-	private int x, y;
+	private int x, y, tempX, tempY;
 	private Scanner scan;
 	private Dispatcher dispatcher;
 	private FreebaseManager freebase;
 	private double latitude, longitude, latitudeOrig, longitudeOrig;
 	private boolean inTown;
-	public static double GEO_SQUARE_SIZE = 1.0;
+	public static double GEO_SQUARE_SIZE = 0.6;
 	public static final String KEY = "AIzaSyDP9MhIpDGVP2J0hkU6yyJNdCkBs6N1DBw";
 
 	private static Game game = new Game();
@@ -98,6 +98,13 @@ public class Game
 				println(getRoom().toString());
 			return;
 		}
+		else if (inTown)
+		{
+			x -= dx;
+			y -= dy;
+			Game.println("You have no place to go.");
+			return;
+		}
 		else if (x < 0)
 			longitude -= GEO_SQUARE_SIZE;
 		else if (x >= grid.length)
@@ -119,15 +126,24 @@ public class Game
 	{
 		inTown = true;
 		tempGrid = grid;
+		tempX = x;
+		tempY = y;
 		Town currRoom = (Town)getRoom();
 		currRoom.update();
 		grid = currRoom.getGrid();
+		println("You enter " + currRoom.getName() + ".");
+		x = 0;
+		y = 0;
+		println(getRoom().toString());
 	}
 	
 	public void exitTown()
 	{
 		inTown = false;
 		grid = tempGrid;
+		x = tempX;
+		y = tempY;
+		println("You exit " + getRoom().getName() + ".");
 	}
 	
 	private void mainLoop()
