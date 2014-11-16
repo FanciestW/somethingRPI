@@ -6,9 +6,11 @@ public class Game
 	private int x, y;
 	private static final int GRID_SIZE = 10;
 	private Scanner scan;
-	private Dispatcher dispatcher;
+	private Dispatcher dispatcher;\
 	
-	public Game()
+	private static Game game = new Game();
+	
+	private Game()
 	{
 		dispatcher = new Dispatcher();
 		scan = new Scanner(System.in);
@@ -19,6 +21,11 @@ public class Game
 		for (int x = 0; x < GRID_SIZE; ++x)
 			for (int y = 0; y < GRID_SIZE; ++y)
 				grid[y][x] = new Room();
+	}
+	
+	public static Game getInstance()
+	{
+		return game;
 	}
 	
 	public static void print(Object o)
@@ -47,9 +54,23 @@ public class Game
 		return grid[y][x];
 	}
 	
+	private void refreshGrid()
+	{
+		//Free
+	}
+	
+	public void move(int dx, int dy)
+	{
+		x += dx;
+		y += dy;
+		if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE)
+			refreshGrid();
+		println(getRoom().getDescription());
+	}
+	
 	private void mainLoop()
 	{
-		println(getRoom().getDescription()); // start out by printing intial description
+		println(getRoom().getDescription()); // start out by printing initial description
 		while (true)
 		{
 			String input = getInput();
@@ -64,7 +85,6 @@ public class Game
 	
 	public static void main(String[] args)
 	{
-		Game game = new Game();
-		game.mainLoop();
+		Game.getInstance().mainLoop();
 	}
 }

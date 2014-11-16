@@ -21,7 +21,7 @@ public class Dispatcher
 			}
 			public boolean handle(Map<String, String> argMap)
 			{
-				Game.println("Possible commands:");
+				Game.print("Possible commands:");
 				for (Map.Entry<Option, Handler> pair : options.entrySet())
 				{
 					Option opt = pair.getKey();
@@ -41,6 +41,66 @@ public class Dispatcher
 				
 				Game.println();
 				return true;
+			}
+		});
+		
+		options.put(new Option("east", "e"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				Game.getInstance().move(1, 0);
+				return true;
+			}
+		});
+		
+		options.put(new Option("west", "w"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				Game.getInstance().move(-1, 0);
+				return true;
+			}
+		});
+		
+		options.put(new Option("north", "n"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				Game.getInstance().move(0, -1);
+				return true;
+			}
+		});
+		
+		options.put(new Option("south", "s"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				Game.getInstance().move(0, 1);
+				return true;
+			}
+		});
+		
+		options.put(new Option("exit", "quit"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				Game.println("Goodbye!");
+				return false;
 			}
 		});
 		
@@ -70,7 +130,7 @@ public class Dispatcher
 			}
 			public boolean handle(Map<String, String> argMap)
 			{
-				Game.println(room);
+				Game.println(room.getDescription());
 				return true;
 			}
 		});
