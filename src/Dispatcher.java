@@ -14,6 +14,18 @@ public class Dispatcher
 		
 		options = new LinkedHashMap<Option, Handler>();
 		
+		options.put(new Option("get location", "location"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				Game.print("Location: (" + Game.getX() + "," + Game.getY() + ")\n");
+				return true;
+			}
+		});
+		
 		options.put(new Option("help", "h"), new Handler() {
 			public Token[] getSyntax()
 			{
@@ -51,7 +63,12 @@ public class Dispatcher
 			}
 			public boolean handle(Map<String, String> argMap)
 			{
-				Game.getInstance().move(1, 0);
+				if(!room.getEast()){
+					Game.getInstance().move(1, 0);
+				}else{
+					Game.println("There is a wall in the way");
+				}
+				
 				return true;
 			}
 		});
@@ -63,7 +80,11 @@ public class Dispatcher
 			}
 			public boolean handle(Map<String, String> argMap)
 			{
-				Game.getInstance().move(-1, 0);
+				if(!room.getWest()){
+					Game.getInstance().move(-1, 0);
+				}else{
+					Game.println("There is a wall in the way");
+				}
 				return true;
 			}
 		});
@@ -75,7 +96,11 @@ public class Dispatcher
 			}
 			public boolean handle(Map<String, String> argMap)
 			{
-				Game.getInstance().move(0, -1);
+				if(!room.getNorth()){
+					Game.getInstance().move(0, -1);
+				}else{
+					Game.println("There is a wall in the way");
+				}
 				return true;
 			}
 		});
@@ -87,7 +112,11 @@ public class Dispatcher
 			}
 			public boolean handle(Map<String, String> argMap)
 			{
-				Game.getInstance().move(0, 1);
+				if(!room.getSouth()){
+					Game.getInstance().move(0, 1);
+				}else{
+					Game.println("There is a wall in the way");
+				}
 				return true;
 			}
 		});
@@ -134,6 +163,20 @@ public class Dispatcher
 				return true;
 			}
 		});
+		
+		/*
+		options.put(new Option("pick up", "pick"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { new Token("at", true), new Token("object", false) };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				//Game.println(room.getDescription());
+				return true;
+			}
+		});
+		*/
 	}
 	
 	public boolean dispatch(String command, String[] args, Room room)

@@ -9,7 +9,7 @@ public class Game
 	private FreebaseManager freebase;
 	private double latitude, longitude;
 	public static double GEO_SQUARE_SIZE = 0.2;
-
+	
 	private static Game game = new Game();
 	
 	private Game()
@@ -17,7 +17,6 @@ public class Game
 		freebase = new FreebaseManager();
 		dispatcher = new Dispatcher();
 		scan = new Scanner(System.in);
-		// begin at center of grid
 		latitude = 42.0;
 		longitude = -72.7;
 		refreshGrid();
@@ -26,6 +25,16 @@ public class Game
 	public static Game getInstance()
 	{
 		return game;
+	}
+	
+	public static int getX()
+	{
+		return x;
+	}
+	
+	public static int getY()
+	{
+		return y;
 	}
 	
 	public static void print(Object o)
@@ -59,6 +68,19 @@ public class Game
 		grid = freebase.getGrid(latitude, longitude);
 	}
 	
+	private void addWallEast(int x, int y){
+		grid[y][x].setEast();
+		if(x + 1 < GRID_SIZE){
+			grid[y][x + 1].setNorth();
+		}
+	}
+	private void addWallSouth(int x, int y){
+		grid[y][x].setSouth();
+		if(y + 1 < GRID_SIZE){
+			grid[y + 1][x].setNorth();
+		}
+	}
+	
 	public void move(int dx, int dy)
 	{
 		x += dx;
@@ -81,15 +103,19 @@ public class Game
 	}
 	
 	private void mainLoop()
-	{
+	{	
+		addWallSouth(1,1);
+		
 		println(getRoom().getDescription()); // start out by printing initial description
 		while (true)
 		{
 			String input = getInput();
 			String[] strSplit = input.split(" ");
 			String[] args = new String[strSplit.length - 1];
-			for (int i = 1; i < strSplit.length; ++i)
+			for (int i = 1; i < strSplit.length; ++i){
 				args[i - 1] = strSplit[i];
+			}
+			
 			if (!dispatcher.dispatch(strSplit[0], args, getRoom()))
 				break;
 		}
