@@ -2,12 +2,14 @@ import java.util.Scanner;
 
 public class Game
 {
-	private Room[][] grid;
+	private Room[][] grid, tempGrid;
+	// TODO: load new room areas in a separate thread
 	private int x, y;
 	private Scanner scan;
 	private Dispatcher dispatcher;
 	private FreebaseManager freebase;
 	private double latitude, longitude, latitudeOrig, longitudeOrig;
+	private boolean inTown;
 	public static double GEO_SQUARE_SIZE = 1.0;
 	public static final String KEY = "AIzaSyDP9MhIpDGVP2J0hkU6yyJNdCkBs6N1DBw";
 
@@ -18,11 +20,11 @@ public class Game
 		freebase = new FreebaseManager();
 		dispatcher = new Dispatcher();
 		scan = new Scanner(System.in);
-		// begin at center of grid
 		latitudeOrig = 42.0;
 		longitudeOrig = -72.7;
 		latitude = 42.0;
 		longitude = -72.7;
+		inTown = false;
 		refreshGrid();
 	}
 	
@@ -86,7 +88,14 @@ public class Game
 		y += dy;
 		if (x >= 0 && x < grid.length && y >= 0 && y < grid.length)
 		{
-			println(getRoom().toString());
+			if (getRoom() == null)
+			{
+				x -= dx;
+				y -= dy;
+				Game.println("You have no place to go.");
+			}
+			else
+				println(getRoom().toString());
 			return;
 		}
 		else if (x < 0)
@@ -99,6 +108,26 @@ public class Game
 			latitude -= GEO_SQUARE_SIZE;
 		refreshGrid();
 		println(getRoom().toString());
+	}
+	
+	public boolean inTown()
+	{
+		return inTown;
+	}
+	
+	public void enterTown()
+	{
+		inTown = true;
+		tempGrid = grid;
+		Town currRoom = (Town)getRoom();
+		currRoom.update();
+		grid = currRoom.getGrid();
+	}
+	
+	public void exitTown()
+	{
+		inTown = false;
+		grid = tempGrid;
 	}
 	
 	private void mainLoop()

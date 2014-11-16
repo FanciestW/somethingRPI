@@ -10,6 +10,11 @@ public class Room implements GameObject
 		objects = new ArrayList<GameObject>();
 	}
 	
+	public Room(String name)
+	{
+		this.name = name;
+	}
+	
 	public void addObject(GameObject obj)
 	{
 		objects.add(obj);
@@ -22,10 +27,16 @@ public class Room implements GameObject
 	
 	public String getDescription()
 	{
-		String descr = "a room.";
-		for (GameObject obj : objects)
-			descr += obj.getDescription();
-		return descr;
+		if (objects.size() == 0)
+			return "a room.";
+		String descr = "a room. You can see ";
+		if (objects.size() == 1)
+			descr += objects.get(0).getName() + ".";
+		else if (objects.size() == 2)
+			descr += objects.get(0).getName() + " and " + objects.get(1).getName();
+		for (int i = 0; i < objects.size() - 1; ++i)
+			descr += objects.get(i).getName() + ", ";
+		return descr + "and " + objects.get(objects.size() - 1) + ".";
 	}
 	
 	private GameObject find(String name)

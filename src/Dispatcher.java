@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -132,6 +131,50 @@ public class Dispatcher
 			public boolean handle(Map<String, String> argMap)
 			{
 				Game.println(room.getDescription());
+				return true;
+			}
+		});
+		
+		options.put(new Option("enter", "investigate"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public String[] getExtraOpts()
+			{
+				return new String[] { "town" };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				if (argMap.containsKey("town") && !argMap.get("town").equals(
+						Game.getInstance().getRoom().getName()))
+					Game.println("You can't go there right now.");
+				else if (Game.getInstance().inTown())
+					Game.println("You're already in town.");
+				else
+					Game.getInstance().enterTown();
+				return true;
+			}
+		});
+		
+		options.put(new Option("exit", "leave"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public String[] getExtraOpts()
+			{
+				return new String[] { "town" };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				if (argMap.containsKey("town") && !argMap.get("town").equals(
+						Game.getInstance().getRoom().getName()))
+					Game.println("You aren't in that town.");
+				else if (!Game.getInstance().inTown())
+					Game.println("You aren't in town.");
+				else
+					Game.getInstance().exitTown();
 				return true;
 			}
 		});
