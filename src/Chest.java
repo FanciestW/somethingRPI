@@ -11,7 +11,7 @@ public class Chest implements GameObject
 	}
 	
 	public String getDescription(){
-		String descr = "A " + color + " Chest.";
+		String descr = "A " + color + " chest.";
 		return descr;
 	}
 	

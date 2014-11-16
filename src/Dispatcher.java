@@ -14,18 +14,6 @@ public class Dispatcher
 		
 		options = new LinkedHashMap<Option, Handler>();
 		
-		options.put(new Option("get location", "location"), new Handler() {
-			public Token[] getSyntax()
-			{
-				return new Token[] { };
-			}
-			public boolean handle(Map<String, String> argMap)
-			{
-				Game.print("Location: (" + Game.getX() + "," + Game.getY() + ")\n");
-				return true;
-			}
-		});
-		
 		options.put(new Option("help", "h"), new Handler() {
 			public Token[] getSyntax()
 			{
@@ -64,9 +52,9 @@ public class Dispatcher
 			public boolean handle(Map<String, String> argMap)
 			{
 				if(!room.getEast()){
-					Game.move(1, 0);
+					Game.getInstance().move(1, 0);
 				}else{
-					Game.println("There is a wall in the way");
+					Game.println("There is a wall in the way.");
 				}
 				
 				return true;
@@ -81,9 +69,9 @@ public class Dispatcher
 			public boolean handle(Map<String, String> argMap)
 			{
 				if(!room.getWest()){
-					Game.move(-1, 0);
+					Game.getInstance().move(-1, 0);
 				}else{
-					Game.println("There is a wall in the way");
+					Game.println("There is a wall in the way.");
 				}
 				return true;
 			}
@@ -97,9 +85,9 @@ public class Dispatcher
 			public boolean handle(Map<String, String> argMap)
 			{
 				if(!room.getNorth()){
-					Game.move(0, -1);
+					Game.getInstance().move(0, -1);
 				}else{
-					Game.println("There is a wall in the way");
+					Game.println("There is a wall in the way.");
 				}
 				return true;
 			}
@@ -113,15 +101,123 @@ public class Dispatcher
 			public boolean handle(Map<String, String> argMap)
 			{
 				if(!room.getSouth()){
-					Game.move(0, 1);
+					Game.getInstance().move(0, 1);
 				}else{
-					Game.println("There is a wall in the way");
+					Game.println("There is a wall in the way.");
 				}
 				return true;
 			}
 		});
 		
-		options.put(new Option("exit", "quit"), new Handler() {
+		options.put(new Option("northeast", "ne"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				if(!room.getNorth()){
+					Game.getInstance().move(1, -1);
+				}else{
+					Game.println("There is a wall in the way.");
+				}
+				return true;
+			}
+		});
+		
+		options.put(new Option("northwest", "nw"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				if(!room.getNorth()){
+					Game.getInstance().move(-1, -1);
+				}else{
+					Game.println("There is a wall in the way.");
+				}
+				return true;
+			}
+		});
+		
+		options.put(new Option("southeast", "se"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				if(!room.getSouth()){
+					Game.getInstance().move(1, 1);
+				}else{
+					Game.println("There is a wall in the way.");
+				}
+				return true;
+			}
+		});
+		
+		options.put(new Option("southwest", "sw"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				if(!room.getSouth()){
+					Game.getInstance().move(-1, 1);
+				}else{
+					Game.println("There is a wall in the way.");
+				}
+				return true;
+			}
+		});
+		
+		options.put(new Option("enter", "investigate"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public String[] getExtraOpts()
+			{
+				return new String[] { "town" };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				if (argMap.containsKey("town") && !argMap.get("town").equalsIgnoreCase(
+						Game.getInstance().getRoom().getName()))
+					Game.println("You can't go there right now.");
+				else if (Game.getInstance().inTown())
+					Game.println("You're already in town.");
+				else
+					Game.getInstance().enterTown();
+				return true;
+			}
+		});
+		
+		options.put(new Option("exit", "leave"), new Handler() {
+			public Token[] getSyntax()
+			{
+				return new Token[] { };
+			}
+			public String[] getExtraOpts()
+			{
+				return new String[] { "town" };
+			}
+			public boolean handle(Map<String, String> argMap)
+			{
+				if (argMap.containsKey("town") && !argMap.get("town").equalsIgnoreCase(
+						Game.getInstance().getRoom().getName()))
+					Game.println("You aren't in that town.");
+				else if (!Game.getInstance().inTown())
+					Game.println("You aren't in town.");
+				else
+					Game.getInstance().exitTown();
+				return true;
+			}
+		});
+		
+		options.put(new Option("end", "quit"), new Handler() {
 			public Token[] getSyntax()
 			{
 				return new Token[] { };
@@ -177,7 +273,8 @@ public class Dispatcher
 				{
 					GameObject obj = room.get(objName);
 					room.delete(objName);
-					Game.getInventory().addToInventory(obj);	
+					Game.getInstance().getInventory().addToInventory(obj);
+					Game.println("Taken.");
 				}else{
 					Game.println("I don't understand what you want to pick up.");
 				}
@@ -193,11 +290,11 @@ public class Dispatcher
 			public boolean handle(Map<String, String> argMap)
 			{
 				String objName = argMap.get("object");
-				if (Game.getInventory().contains(objName))
+				if (Game.getInstance().getInventory().contains(objName))
 				{
-					GameObject obj = Game.getInventory().get(objName);
-					Game.addObject(Game.getX(), Game.getY(), obj);
-					Game.getInventory().dropInventory(obj);	
+					GameObject obj = Game.getInstance().getInventory().get(objName);
+					Game.getInstance().addObject(Game.getInstance().getX(), Game.getInstance().getY(), obj);
+					Game.getInstance().getInventory().dropInventory(obj);	
 				}else{
 					Game.println("I don't understand what you want to drop.");
 				}
@@ -213,7 +310,7 @@ public class Dispatcher
 			}
 			public boolean handle(Map<String, String> argMap)
 			{
-				Game.getInventory().viewInventory();
+				Game.getInstance().getInventory().viewInventory();
 				return true;
 			}
 		});
@@ -227,7 +324,7 @@ public class Dispatcher
 			{
 				if(room.contains("monster")){
 					GameObject obj = room.get("monster").killCondition();
-					if(Game.getInventory().contains(obj)){
+					if(Game.getInstance().getInventory().contains(obj)){
 						Game.println("You successfully killed the monster! You can proceed");
 						room.delete("monster");
 					}else{
@@ -252,10 +349,10 @@ public class Dispatcher
 				if (room.contains(objName))
 				{
 					GameObject obj = room.get(objName);
-					if(obj.getName().equals("chest") && Game.getInventory().contains(obj.killCondition())){
+					if(obj.getName().equals("chest") && Game.getInstance().getInventory().contains(obj.killCondition())){
 						room.delete(objName);
 						Game.println("Found a " + obj.getObject().getName() + "!");
-						Game.getInventory().addToInventory(obj.getObject());
+						Game.getInstance().getInventory().addToInventory(obj.getObject());
 					}else{
 						Game.println("Cannot open that");
 					}

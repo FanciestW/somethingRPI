@@ -7,12 +7,12 @@ public class Key implements GameObject
 	}
 	
 	public String getDescription(){
-		String descr = "A " + color + " Key.";
+		String descr = "A " + color + " key.";
 		return descr;
 	}
 	
 	public String getName(){
-		return "key";
+		return "a key";
 	}
 	
 	public GameObject killCondition(){
