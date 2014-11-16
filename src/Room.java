@@ -7,7 +7,7 @@ public class Room implements GameObject
 	protected ArrayList<GameObject> objects;
 	protected String name = "a room";
 	protected String description = "A nondescript room.";
-	
+
 	public Room()
 	{
 		objects = new ArrayList<GameObject>();
@@ -24,7 +24,7 @@ public class Room implements GameObject
 		Random r = new Random();
 		description = descriptions[r.nextInt(4)];
 	}
-	
+
 	public Room(String name, String description)
 	{
 		this.name = name;
@@ -39,43 +39,43 @@ public class Room implements GameObject
 		if (lower.contains("sport"))
 			addObject(new SportsItem());
 	}
-	
+
 	public GameObject killCondition(){
 		return null;
 	}
-	
+
 	public GameObject getObject(){
 		return null;
 	}
-	
+
 	public void setSouth(){
 		south = true;
 	}
-	
+
 	public void setNorth(){
 		north = true;
 	}
-	
+
 	public void setEast(){
 		east = true;
 	}
-	
+
 	public void setWest(){
 		west = true;
 	}
-	
+
 	public boolean getSouth(){
 		return south;
 	}
-	
+
 	public boolean getNorth(){
 		return north;
 	}
-	
+
 	public boolean getEast(){
 		return east;
 	}
-	
+
 	public boolean getWest(){
 		return west;
 	}
@@ -84,7 +84,7 @@ public class Room implements GameObject
 	{
 		objects.add(obj);
 	}
-	
+
 	public String getName()
 	{
 		return name;
@@ -92,19 +92,23 @@ public class Room implements GameObject
 
 	public String getDescription()
 	{
+		String ret = description + "\n";
 		if(Game.ADVENTURE_MODE)
 		{
 			for (GameObject obj : objects)
+			{
 				if (obj.getName().equals("thief")){
-					Game.println("Oh no, a thief! He steals all of your items.");
+					ret += "Oh no, a thief! He steals all of your items.\n";
 					Game.getInstance().getInventory().deleteAll();
 				}
+				ret += "There is " + obj.getDescription().toLowerCase() + "\n";
+			}
 		}
 		else if (description.length() == 0)
 			return "Not much to see here.";
-		return description;
+		return ret;
 	}
-	
+
 	private GameObject find(String name)
 	{
 		for (GameObject obj : objects)
@@ -114,7 +118,7 @@ public class Room implements GameObject
 		}
 		return null;
 	}
-	
+
 	private String display()
 	{
 		if (objects.size() == 0)
@@ -128,21 +132,21 @@ public class Room implements GameObject
 			descr += objects.get(i).getName() + ", ";
 		return descr + "and " + objects.get(objects.size() - 1) + ".";
 	}
-	
+
 	public void delete(String s){
 		objects.remove(find(s));
 	}
-	
+
 	public boolean contains(String obj)
 	{
 		return (find(obj) != null);
 	}
-	
+
 	public GameObject get(String name)
 	{
 		return find(name);
 	}
-	
+
 	public String toString()
 	{
 		return "You are in " + display();

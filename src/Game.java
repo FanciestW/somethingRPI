@@ -1,11 +1,15 @@
 import java.util.Scanner;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+
 public class Game
 {
 	private Room[][] grid, tempGrid;
-	// TODO: load new room areas in a separate thread
+	private Room[][] leftGrid = null, rightGrid = null;
 	private int x, y, tempX, tempY;
-	private Scanner scan;
+	private static Scanner scan = new Scanner(System.in);
 	private Dispatcher dispatcher;
 	private FreebaseManager freebase;
 	private double latitude, longitude, latitudeOrig, longitudeOrig;
@@ -13,16 +17,18 @@ public class Game
 	private Inventory inventory = new Inventory();
 	public static double GEO_SQUARE_SIZE = 0.6;
 	public static final String KEY = "AIzaSyDP9MhIpDGVP2J0hkU6yyJNdCkBs6N1DBw";
-	public static boolean ADVENTURE_MODE = true;
+	public static boolean ADVENTURE_MODE = false;
 	private static final int GRID_SIZE = 10;
+	private static JFrame frame;
+	private static JTextArea textArea;
 
-	private static Game game = new Game();
-	
+	private static Game game;
+
 	private Game()
 	{
 		dispatcher = new Dispatcher();
 		scan = new Scanner(System.in);
-		
+
 		if (ADVENTURE_MODE)
 		{
 			x = 0;
@@ -41,45 +47,58 @@ public class Game
 			longitude = -72.7;
 			inTown = false;
 			refreshGrid();
+			Thread thread = new Thread() {
+				@Override
+				public void run()
+				{
+					int i = 0;
+					Room[][] gr;
+					do
+					{
+						gr = freebase.getGrid(latitude, longitude);
+						++i;
+					} while (gr == null && i < 5);
+				}
+			};
 		}
 	}
-	
+
 	public static Game getInstance()
 	{
 		return game;
 	}
-	
+
 	public Inventory getInventory()
 	{
 		return inventory;
 	}
-	
+
 	public static void print(Object o)
 	{
 		System.out.print(o.toString());
 	}
-	
+
 	public static void println(Object o)
 	{
 		System.out.println(o.toString());
 	}
-	
+
 	public static void println()
 	{
 		println("");
 	}
-	
-	private String getInput()
+
+	private static String getInput()
 	{
 		print("> ");
 		return scan.nextLine().toLowerCase();
 	}
-	
+
 	public Room getRoom()
 	{
 		return grid[y][x];
 	}
-	
+
 	private void refreshGrid()
 	{
 		int i = 0;
@@ -88,7 +107,7 @@ public class Game
 			grid = freebase.getGrid(latitude, longitude);
 			++i;
 		} while (grid == null && i < 5);
-		
+
 		if (i == 5)
 		{
 			Game.print("No available towns to navigate in this area...");
@@ -98,21 +117,21 @@ public class Game
 			refreshGrid();
 			return;
 		}
-		
+
 		x = grid.length / 2;
 		y = grid.length / 2;
 	}
-	
+
 	public int getX()
 	{
 		return x;
 	}
-	
+
 	public int getY()
 	{
 		return y;
 	}
-	
+
 	public void moveAdventure(int dx, int dy)
 	{
 		if(getRoom().contains("monster")){
@@ -126,7 +145,7 @@ public class Game
 		if(x == 9 && y == 9){
 			println("Congradulations, you win.");
 		}
-		
+
 		if (x + dx >= 0 && x + dx < grid.length && y + dy >= 0 && y + dy < grid.length)
 		{
 			x += dx;
@@ -138,7 +157,7 @@ public class Game
 			println("You can't move outside the map.");
 		}
 	}
-	
+
 	public void move(int dx, int dy)
 	{
 		if (ADVENTURE_MODE) { moveAdventure(dx, dy); return; }
@@ -174,16 +193,16 @@ public class Game
 		refreshGrid();
 		println(getRoom().toString());
 	}
-	
+
 	public void addObject(int x, int y, GameObject s){
-				grid[y][x].addObject(s);
+		grid[y][x].addObject(s);
 	}
-	
+
 	public boolean inTown()
 	{
 		return inTown;
 	}
-	
+
 	public void enterTown()
 	{
 		inTown = true;
@@ -198,7 +217,7 @@ public class Game
 		y = 0;
 		println(getRoom().toString());
 	}
-	
+
 	public void exitTown()
 	{
 		inTown = false;
@@ -207,7 +226,7 @@ public class Game
 		y = tempY;
 		println("You exit " + getRoom().getName() + ".");
 	}
-	
+
 	private void addWallEast(int x, int y){
 		grid[y][x].setEast();
 		if(x + 1 < grid.length){
@@ -220,7 +239,7 @@ public class Game
 			grid[y + 1][x].setNorth();
 		}
 	}
-	
+
 	private void beginAdventure()
 	{
 		addWallEast(3,0);
@@ -231,32 +250,32 @@ public class Game
 		//addWallSouth(1,3);
 		addWallSouth(2,3);
 		addWallSouth(3,3);
-		
+
 		addWallEast(0,4);
 		addWallEast(0,5);
 		addWallEast(0,6);
-		
+
 		addWallEast(1,4);
 		addWallEast(1,5);
 		addWallEast(1,6);
 		addWallEast(1,7);
 		addWallEast(1,8);
 		//addWallEast(1,9);
-		
+
 		addWallEast(2,6);
 		//addWallEast(2,7);
 		addWallEast(2,8);
 		addWallEast(2,9);
-		
+
 		addWallEast(3,4);
 		addWallEast(3,5);
 		addWallEast(3,6);
 		//addWallEast(3,7);
 		addWallEast(3,8);
 		addWallEast(3,9);
-		
+
 		addWallSouth(4,4);
-		
+
 		addWallEast(5,1);
 		addWallEast(5,2);
 		addWallEast(5,3);
@@ -264,24 +283,24 @@ public class Game
 		addWallEast(5,5);
 		addWallEast(5,6);
 		addWallEast(5,8);
-		
+
 		addWallEast(6,0);
 		addWallEast(6,1);
 		addWallEast(6,2);
 		addWallEast(6,3);
 		addWallEast(6,4);
 		addWallEast(6,5);
-		
+
 		addWallEast(7,6);
 		addWallEast(7,7);
 		addWallEast(7,8);
 		addWallEast(7,9);
-		
+
 		addWallSouth(8,5);
 		addWallSouth(8,7);
 		addWallSouth(9,6);
 		addWallSouth(9,8);
-		
+
 		Key redKey = new Key("red");
 		addObject(0,0,redKey);
 		Key blueKey = new Key("blue");
@@ -295,14 +314,14 @@ public class Game
 		addObject(0,9,blueChest);
 		Thief thief = new Thief();
 		addObject(2,7, thief);
-		
+
 		Monster monster1 = new Monster("happy", false, sword, null);
 		Monster monster2 = new Monster("sad", false, sword, null);
 		addObject(4,5,monster1);
 		addObject(5,6,monster2);
 		Thief thief2 = new Thief();
 		addObject(6,5,thief2);
-		
+
 		QuickSand quicksand = new QuickSand();
 		QuickSand quicksand2 = new QuickSand();
 		QuickSand quicksand3 = new QuickSand();
@@ -315,16 +334,23 @@ public class Game
 		addObject(8,0,quicksand4);
 		addObject(8,4,quicksand5);
 		addObject(9,2,quicksand6);
-		
+
 		Weapon bazooka = new Weapon("Bazoooka");
 		Monster monster3 = new Monster("tiny", true, bow, null); 
 		addObject(9,0, bazooka);
 		addObject(9,0, monster3);
-		
+
 		Monster finalMonster = new Monster("SATANIC", true, bazooka, null);
 		addObject(8,9, finalMonster);
 	}
 	
+	public void teleport(double lat, double longi)
+	{
+		latitude = lat;
+		longitude = longi;
+		refreshGrid();
+	}
+
 	private void mainLoop()
 	{
 		if (ADVENTURE_MODE)
@@ -341,9 +367,27 @@ public class Game
 				break;
 		}
 	}
-	
+
 	public static void main(String[] args)
 	{
-		Game.getInstance().mainLoop();
+		println("GLOBAL TEXT ADVENTURE");
+		println("*********************\n");
+		String in;
+		do
+		{
+			println("Play in adventure mode (1) or freeplay mode (2)?");
+			in = getInput();
+			if (in.equals("1"))
+				ADVENTURE_MODE = true;
+			else if (in.equals("2"))
+			{
+				ADVENTURE_MODE = false;
+			}
+			else
+				println("Please enter either 1 or 2.");
+		} while (!in.equals("1") && !in.equals("2"));
+		
+		game = new Game();
+		game.mainLoop();
 	}
 }

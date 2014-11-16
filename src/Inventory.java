@@ -26,48 +26,49 @@ public class Inventory
 		}
 	}
 
-		public boolean contains(GameObject obj){
-			for(int i = 0; i < size; i++){
-				if(inv[i] == obj){
-					return true;
-				}
+	public boolean contains(GameObject obj){
+		for(int i = 0; i < size; i++){
+			if(inv[i] == obj){
+				return true;
 			}
-			return false;
 		}
+		return false;
+	}
 
-		public GameObject get(String obj){
-			for(int i = 0; i < size; i++){
-				if(inv[i].getName().equals(obj) || inv[i].getName().equals("a " + obj)){
-					return inv[i];
-				}
+	public GameObject get(String obj){
+		for(int i = 0; i < size; i++){
+			if(inv[i].getName().equals(obj) || inv[i].getName().equals("a " + obj)){
+				return inv[i];
 			}
-			return null;
 		}
+		return null;
+	}
 
-		public boolean contains(String obj){
-			for(int i = 0; i < size; i++){System.out.println(inv[i].getName() + ", " + obj);
+	public boolean contains(String obj){
+		for(int i = 0; i < size; i++)
+		{
 			if(inv[i].getName().equals(obj) || inv[i].getName().equals("a " + obj)){
 				return true;
 			}
-			}
-			return false;
 		}
-
-		public void dropInventory(GameObject s){
-			for(int i = 0; i < size; i++){
-				if(inv[i] == s){
-					inv[i] = inv[size-1];
-					inv[size-1] = s;
-				}
-			}
-			inv[size-1] = null;
-			size--;
-		}
-
-		public void deleteAll(){
-			for(int i = size - 1; i > -1; i--){
-				inv[i] = null;
-			}
-			size = 0;
-		}
+		return false;
 	}
+
+	public void dropInventory(GameObject s){
+		for(int i = 0; i < size; i++){
+			if(inv[i] == s){
+				inv[i] = inv[size-1];
+				inv[size-1] = s;
+			}
+		}
+		inv[size-1] = null;
+		size--;
+	}
+
+	public void deleteAll(){
+		for(int i = size - 1; i > -1; i--){
+			inv[i] = null;
+		}
+		size = 0;
+	}
+}
