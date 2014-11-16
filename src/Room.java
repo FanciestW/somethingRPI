@@ -2,21 +2,27 @@ import java.util.ArrayList;
 
 public class Room implements GameObject
 {
-	private ArrayList<GameObject> objects;
+	protected ArrayList<GameObject> objects;
+	protected String name = "a room";
 	
 	public Room()
 	{
 		objects = new ArrayList<GameObject>();
 	}
 	
+	public void addObject(GameObject obj)
+	{
+		objects.add(obj);
+	}
+	
 	public String getName()
 	{
-		return "Room";
+		return name;
 	}
 	
 	public String getDescription()
 	{
-		String descr = "A room.\n";
+		String descr = "a room.";
 		for (GameObject obj : objects)
 			descr += obj.getDescription();
 		return descr;
@@ -25,8 +31,10 @@ public class Room implements GameObject
 	private GameObject find(String name)
 	{
 		for (GameObject obj : objects)
+		{
 			if (obj.getName().equals(name))
 				return obj;
+		}
 		return null;
 	}
 	
@@ -38,5 +46,10 @@ public class Room implements GameObject
 	public GameObject get(String name)
 	{
 		return find(name);
+	}
+	
+	public String toString()
+	{
+		return "You are in " + getName() + ".";
 	}
 }

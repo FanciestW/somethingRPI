@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -169,8 +170,7 @@ public class Dispatcher
 				for (int i = 0; i < tokens.length; ++i)
 				{
 					Token token = tokens[i];
-					if (token.isLiteral())
-						if (!token.getName().equals(args[i]))
+					if (token.isLiteral() && !token.getName().equals(args[i]))
 						{
 							err = "The syntax of \"" + command + "\" requires the use of \""
 								+ token.getName() + "\", not \"" + args[i] + "\".";

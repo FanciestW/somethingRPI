@@ -7,8 +7,9 @@ public class Game
 	private Scanner scan;
 	private Dispatcher dispatcher;
 	private FreebaseManager freebase;
-	private double latitude, longitude;
-	public static double GEO_SQUARE_SIZE = 0.2;
+	private double latitude, longitude, latitudeOrig, longitudeOrig;
+	public static double GEO_SQUARE_SIZE = 1.0;
+	public static final String KEY = "AIzaSyDP9MhIpDGVP2J0hkU6yyJNdCkBs6N1DBw";
 
 	private static Game game = new Game();
 	
@@ -18,6 +19,8 @@ public class Game
 		dispatcher = new Dispatcher();
 		scan = new Scanner(System.in);
 		// begin at center of grid
+		latitudeOrig = 42.0;
+		longitudeOrig = -72.7;
 		latitude = 42.0;
 		longitude = -72.7;
 		refreshGrid();
@@ -56,7 +59,25 @@ public class Game
 	
 	private void refreshGrid()
 	{
-		grid = freebase.getGrid(latitude, longitude);
+		int i = 0;
+		do
+		{
+			grid = freebase.getGrid(latitude, longitude);
+			++i;
+		} while (grid == null && i < 5);
+		
+		if (i == 5)
+		{
+			Game.print("No available towns to navigate in this area...");
+			Game.println("Teleporting back to original square.");
+			latitude = latitudeOrig;
+			longitude = longitudeOrig;
+			refreshGrid();
+			return;
+		}
+		
+		x = grid.length / 2;
+		y = grid.length / 2;
 	}
 	
 	public void move(int dx, int dy)
@@ -65,7 +86,7 @@ public class Game
 		y += dy;
 		if (x >= 0 && x < grid.length && y >= 0 && y < grid.length)
 		{
-			println(getRoom().getDescription());
+			println(getRoom().toString());
 			return;
 		}
 		else if (x < 0)
@@ -73,16 +94,16 @@ public class Game
 		else if (x >= grid.length)
 			longitude += GEO_SQUARE_SIZE;
 		else if (y < 0)
-			latitude -= GEO_SQUARE_SIZE;
-		else
 			latitude += GEO_SQUARE_SIZE;
+		else
+			latitude -= GEO_SQUARE_SIZE;
 		refreshGrid();
-		println(getRoom().getDescription());
+		println(getRoom().toString());
 	}
 	
 	private void mainLoop()
 	{
-		println(getRoom().getDescription()); // start out by printing initial description
+		println(getRoom().toString()); // start out by printing initial description
 		while (true)
 		{
 			String input = getInput();
